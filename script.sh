@@ -49,3 +49,26 @@ case "$distro" in
     exit 1
     ;;
 esac
+
+# Check if ccache config is already present in .bashrc
+if ! grep -q 'Generated ccache config' "$HOME/.bashrc"; then
+  echo "Configuring ccache..."
+
+  # Set default ccache directory if custom directory is not set
+  directory_ccache_custom=${directory_ccache_custom:-$HOME/.aosp_ccache}
+
+  # Create ccache directory and set permissions
+  mkdir -p "$directory_ccache_custom"
+  sudo mount --bind "$HOME/.ccache" "$directory_ccache_custom"
+  sudo chmod -R 777 "$directory_ccache_custom"
+
+  # Append ccache config to .bashrc
+  cat << EOF >> "$HOME/.bashrc"
+
+# Generated ccache config
+export USE_CCACHE=1
+export CCACHE_EXEC=/usr/bin/ccache
+export CCACHE_DIR="$directory_ccache_custom"
+ccache -M 50G -F 0
+EOF
+fi
