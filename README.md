@@ -2,9 +2,9 @@
 A script for setting up your Linux environment for Android development. This script will clone the [akhilnarang/scripts](https://github.com/akhilnarang/scripts) repository and run the necessary setup script based on your Linux distribution.
 
 # Usage
-Make the script executable with ```chmod +x android_setup.sh```
+Make the script executable with ```chmod +x script.sh```
 
-Run the script with ```./android_setup.sh```
+Run the script with ```./script.sh```
 
 The script will clone the akhilnarang/scripts repository and run the appropriate setup script for your Linux distribution.
 
