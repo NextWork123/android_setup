@@ -23,12 +23,21 @@ else
   fi
 fi
 
-# Cloning of akhilnarang Scripts and execution
-cd ~/
+# Cloning of akhilnarang Scripts in '/home/$USER/scripts' and execution
+SCRIPT_DIR=~/scripts
 if [[ ! -f scripts/setup/android_build_env.sh ]]; then
-  git clone https://github.com/akhilnarang/scripts
+  git clone https://github.com/akhilnarang/scripts $SCRIPT_DIR
+  #
+  # Abort the script if it failed to clone.
+  # Problems with github? Problems with the user's internet?
+  # What do I know?
+  #
+  if [ $? -ne 0 ]; then
+    echo "Failled to clone akhilnarang/scripts in $SCRIPT_DIR"
+    exit 1
+  fi
 fi
-cd ~/scripts
+cd $SCRIPT_DIR
 
 # Installation of necessary packages
 case "$distro" in
