@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Current Linux Distribution
-distro=$(lsb_release -si)
+distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')
 
 # Ask for user name and email for Github
 if [ -z "$(git config --global user.name)" ] || [ -z "$(git config --global user.email)" ]; then
@@ -23,25 +23,34 @@ else
   fi
 fi
 
-# Cloning of akhilnarang Scripts and execution
-cd ~/
+# Cloning of akhilnarang Scripts in '/home/$USER/scripts' and execution
+SCRIPT_DIR=~/scripts
 if [[ ! -f scripts/setup/android_build_env.sh ]]; then
-  git clone https://github.com/akhilnarang/scripts
+  git clone https://github.com/akhilnarang/scripts --depth=1 $SCRIPT_DIR
+  #
+  # Abort the script if it failed to clone.
+  # Problems with github? Problems with the user's internet?
+  # What do I know?
+  #
+  if [ $? -ne 0 ]; then
+    echo "Failled to clone akhilnarang/scripts in $SCRIPT_DIR"
+    exit 1
+  fi
 fi
-cd ~/scripts
+cd $SCRIPT_DIR
 
 # Installation of necessary packages
 case "$distro" in
-  Ubuntu|Debian)
+  "ubuntu" | "debian" | "linuxmint" | "kali")
     ./setup/android_build_env.sh
     ;;
-  Manjaro|Arch|cachyos)
+  "arch" | "manjaro" | "arcolinux" | "garuda" | "artix" | "cachyos")
     ./setup/arch-manjaro.sh
     ;;
-  Solus)
+  "solus")
     ./setup/solus.sh
     ;;
-  Fedora)
+  "fedora" | "centos")
     ./setup/fedora.sh
     ;;
   *)
