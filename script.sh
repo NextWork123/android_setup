@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Current Linux Distribution
-distro=$(lsb_release -si)
+distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')
 
 # Ask for user name and email for Github
 if [ -z "$(git config --global user.name)" ] || [ -z "$(git config --global user.email)" ]; then
@@ -32,16 +32,16 @@ cd ~/scripts
 
 # Installation of necessary packages
 case "$distro" in
-  Ubuntu|Debian)
+  "ubuntu" | "debian" | "linuxmint" | "kali")
     ./setup/android_build_env.sh
     ;;
-  Manjaro|Arch|cachyos)
+  "arch" | "manjaro" | "arcolinux" | "garuda" | "artix" | "cachyos")
     ./setup/arch-manjaro.sh
     ;;
-  Solus)
+  "solus")
     ./setup/solus.sh
     ;;
-  Fedora)
+  "fedora" | "centos")
     ./setup/fedora.sh
     ;;
   *)
