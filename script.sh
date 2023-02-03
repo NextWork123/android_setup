@@ -180,7 +180,7 @@ fi
 
 # Cloning of akhilnarang Scripts in '/home/$USER/scripts' and execution
 SCRIPT_DIR=~/scripts
-if [[ ! -f scripts/setup/android_build_env.sh ]]; then
+if [[ ! -f ~/scripts/setup/android_build_env.sh ]]; then
   git clone https://github.com/akhilnarang/scripts --depth=1 $SCRIPT_DIR
   #
   # Abort the script if it failed to clone.
