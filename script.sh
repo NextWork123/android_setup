@@ -217,6 +217,7 @@ esac
 # Check if ccache config is already present in .bashrc
 if ! grep -q 'Generated ccache config' "$HOME/.bashrc"; then
   echo "Configuring ccache..."
+
   # Set the ccache directory
   export CCACHE_DIR=~/.ccache
   # Set the path to ccache executable
@@ -224,11 +225,20 @@ if ! grep -q 'Generated ccache config' "$HOME/.bashrc"; then
   # Enable ccache
   export USE_CCACHE=1
   # Set cache size to 50 GB
-  ccache -M 50G
+  ccache -M 50G > /dev/null
   # Enable compression
-  ccache -o compression=true
+  ccache -o compression=true > /dev/null
   # Zero statistics
-  ccache -z
+  ccache -z > /dev/null
+
+  # Append ccache config to .bashrc
+  cat << EOF >> "$HOME/.bashrc"
+
+# Generated ccache config
+export USE_CCACHE=1
+export CCACHE_EXEC=$CCACHE_EXEC
+export CCACHE_DIR=$CCACHE_DIR
+EOF
 fi
 
 #
