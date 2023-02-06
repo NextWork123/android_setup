@@ -110,6 +110,7 @@ SwapOnFile () {
     size_file=$(echo $size_file | tr -dc '0-9')
     if [[ "$size_file" -lt "1" ]]; then
         echo "Less than 1 GB. Abort."
+        exit 1
     fi
     #
     # convert GB to MiB
