@@ -267,3 +267,48 @@ if [ $MEMORY_RAM -lt 16 ] && [ $MEMORY_SWAP -lt 30 ]; then
         fi
     fi
 fi
+
+#
+# Increase swap usage if your machine is less than 16
+#
+if [[ $MEMORY_RAM -lt 16 ]]; then
+    if free | awk '/^Swap:/ {exit !$2}' ; then
+        SWAPPINESS="/proc/sys/vm/swappiness"
+        if [ -f $SWAPPINESS ]; then
+            #
+            # 200 is max for linux 5.10 or over.
+            # 100 is max for linux 5.4 or before. 
+            #
+            VALUE="100" # 100 by default
+            #
+            # put VERSION - PATCHLEVEL - SUBLEVEL in array
+            # but we need to check only version and pathlevel (array index 0 - 1)
+            #
+            LINUX_VERSION="$(uname -r | tr '-' '\n' | head -n 1)"
+            LINUX_VERSION=($(echo $LINUX_VERSION | tr '.' '\n'))
+
+            # check if we can't increase max swap percent over 100
+            if [[ "5" -le "${LINUX_VERSION[0]}" ]]; then
+                if [[ "5" -ne ${LINUX_VERSION[0]} ]]; then
+                    # here only if is 6.x.y kernel
+                    echo "Your kernel is over 6.x.y"
+                    VALUE="200"
+                else
+                    if [[ "10" -le ${LINUX_VERSION[1]} ]]; then
+                        # here if is over or equal 5.10.y kernel
+                        echo "Your kernel is over 5.10.y"
+                        VALUE="200"
+                    fi
+                fi
+            else
+                echo "You have old kernel."
+            fi
+
+            if [[ $(cat $SWAPPINESS) -ne $VALUE ]]; then
+                echo "Increase the interaction with the swap from $(cat $SWAPPINESS) to $VALUE..."
+                sudo su -c "echo $VALUE > $SWAPPINESS"
+                echo " "
+            fi
+        fi
+    fi
+fi
