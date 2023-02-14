@@ -7,8 +7,7 @@ GRN='\033[0;32m'
 PUL='\033[0;35m'
 RST='\033[0m'
 
-
-loadMemory () {
+loadMemory() {
     MEMORY_RAM=$(cat /proc/meminfo | grep MemTotal: | tr '\n' ' ' | sed -e 's/[^0-9]/ /g' -e 's/^ *//g' -e 's/ *$//g' | tr -s ' ' | sed 's/ /\n/g')
     # Convert to MB
     MEMORY_RAM=$((${MEMORY_RAM} / 1024))
@@ -31,12 +30,12 @@ MEMORY_RAM=0
 MEMORY_SWAP=0
 loadMemory
 
-SwapOnPartition () {
+SwapOnPartition() {
     #
     # print partition in use as root
     # /boot (for efi usage) and print / (system)
     #
-    DontUse=( $(df -h | grep ^/dev | grep '/boot\|/$' | tr ' ' '\n' | grep /dev) )
+    DontUse=($(df -h | grep ^/dev | grep '/boot\|/$' | tr ' ' '\n' | grep /dev))
     printf "${RED}Don't use this partition:\n"
     echo "${DontUse[*]}"
     printf "${RST}"
@@ -100,7 +99,7 @@ SwapOnPartition () {
 # Read doc:
 # https://wiki.archlinux.org/title/Swap#Swap_file
 #
-SwapOnFile () {
+SwapOnFile() {
     SWAP_FILE=/swapfile
     read -p "Write size of swap (integer and in GB): " size_file
     #
@@ -118,7 +117,7 @@ SwapOnFile () {
     # but bash can only multiply integers
     #
     size_file=$((size_file * 954))
-    
+
     #
     # If this file already exit maybe this script
     # isn't started for first time here
@@ -161,55 +160,55 @@ distro=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | 
 
 # Ask for user name and email for Github
 if [ -z "$(git config --global user.name)" ] || [ -z "$(git config --global user.email)" ]; then
-  echo "Enter your Github name and email to configure Git:"
-  read -p "Name: " YOUR_NAME
-  read -p "Email: " YOUR_EMAIL
-  git config --global user.name "$YOUR_NAME"
-  git config --global user.email "$YOUR_EMAIL"
-else
-  echo "Git is already configured with the following details:"
-  echo "Name: $(git config --global user.name)"
-  echo "Email: $(git config --global user.email)"
-  read -p "Do you want to change these details? [y/N]: " change_details
-  if [ "$change_details" == "y" ] || [ "$change_details" == "Y" ]; then
-    read -p "Enter new name: " YOUR_NAME
-    read -p "Enter new email: " YOUR_EMAIL
+    echo "Enter your Github name and email to configure Git:"
+    read -p "Name: " YOUR_NAME
+    read -p "Email: " YOUR_EMAIL
     git config --global user.name "$YOUR_NAME"
     git config --global user.email "$YOUR_EMAIL"
-  fi
+else
+    echo "Git is already configured with the following details:"
+    echo "Name: $(git config --global user.name)"
+    echo "Email: $(git config --global user.email)"
+    read -p "Do you want to change these details? [y/N]: " change_details
+    if [ "$change_details" == "y" ] || [ "$change_details" == "Y" ]; then
+        read -p "Enter new name: " YOUR_NAME
+        read -p "Enter new email: " YOUR_EMAIL
+        git config --global user.name "$YOUR_NAME"
+        git config --global user.email "$YOUR_EMAIL"
+    fi
 fi
 
 # Cloning of akhilnarang Scripts in '/home/$USER/scripts' and execution
 SCRIPT_DIR=~/scripts
 if [[ ! -f ~/scripts/setup/android_build_env.sh ]]; then
-  git clone https://github.com/akhilnarang/scripts --depth=1 $SCRIPT_DIR
-  #
-  # Abort the script if it failed to clone.
-  # Problems with github? Problems with the user's internet?
-  # What do I know?
-  #
-  if [ $? -ne 0 ]; then
-    echo "Failled to clone akhilnarang/scripts in $SCRIPT_DIR"
-    exit 1
-  fi
+    git clone https://github.com/akhilnarang/scripts --depth=1 $SCRIPT_DIR
+    #
+    # Abort the script if it failed to clone.
+    # Problems with github? Problems with the user's internet?
+    # What do I know?
+    #
+    if [ $? -ne 0 ]; then
+        echo "Failled to clone akhilnarang/scripts in $SCRIPT_DIR"
+        exit 1
+    fi
 fi
 cd $SCRIPT_DIR
 
 # Installation of necessary packages
 case "$distro" in
-  "ubuntu" | "debian" | "linuxmint" | "kali")
+"ubuntu" | "debian" | "linuxmint" | "kali")
     ./setup/android_build_env.sh
     ;;
-  "arch" | "manjaro" | "arcolinux" | "garuda" | "artix" | "cachyos")
+"arch" | "manjaro" | "arcolinux" | "garuda" | "artix" | "cachyos")
     ./setup/arch-manjaro.sh
     ;;
-  "solus")
+"solus")
     ./setup/solus.sh
     ;;
-  "fedora" | "centos")
+"fedora" | "centos")
     ./setup/fedora.sh
     ;;
-  *)
+*)
     echo "Distribution Not Supported"
     exit 1
     ;;
@@ -217,23 +216,23 @@ esac
 
 # Check if ccache config is already present in .bashrc
 if ! grep -q 'Generated ccache config' "$HOME/.bashrc"; then
-  echo "Configuring ccache..."
+    echo "Configuring ccache..."
 
-  # Set the ccache directory
-  export CCACHE_DIR=~/.ccache
-  # Set the path to ccache executable
-  export CCACHE_EXEC=$(which ccache)
-  # Enable ccache
-  export USE_CCACHE=1
-  # Set cache size to 50 GB
-  ccache -M 50G > /dev/null
-  # Enable compression
-  ccache -o compression=true > /dev/null
-  # Zero statistics
-  ccache -z > /dev/null
+    # Set the ccache directory
+    export CCACHE_DIR=~/.ccache
+    # Set the path to ccache executable
+    export CCACHE_EXEC=$(which ccache)
+    # Enable ccache
+    export USE_CCACHE=1
+    # Set cache size to 50 GB
+    ccache -M 50G >/dev/null
+    # Enable compression
+    ccache -o compression=true >/dev/null
+    # Zero statistics
+    ccache -z >/dev/null
 
-  # Append ccache config to .bashrc
-  cat << EOF >> "$HOME/.bashrc"
+    # Append ccache config to .bashrc
+    cat <<EOF >>"$HOME/.bashrc"
 
 # Generated ccache config
 export USE_CCACHE=1
@@ -272,12 +271,12 @@ fi
 # Increase swap usage if your machine is less than 16
 #
 if [[ $MEMORY_RAM -lt 16 ]]; then
-    if free | awk '/^Swap:/ {exit !$2}' ; then
+    if free | awk '/^Swap:/ {exit !$2}'; then
         SWAPPINESS="/proc/sys/vm/swappiness"
         if [ -f $SWAPPINESS ]; then
             #
             # 200 is max for linux 5.10 or over.
-            # 100 is max for linux 5.4 or before. 
+            # 100 is max for linux 5.4 or before.
             #
             VALUE="100" # 100 by default
             #
