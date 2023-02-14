@@ -262,9 +262,7 @@ if [ $MEMORY_RAM -lt 16 ] && [ $MEMORY_SWAP -lt 30 ]; then
             else
                 echo "Abort."
             fi
-        fi
-
-        if [[ "$enable_swap" == "2" ]]; then
+        elif [[ "$enable_swap" == "2" ]]; then
             SwapOnFile
         fi
     fi
