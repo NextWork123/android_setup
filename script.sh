@@ -317,6 +317,47 @@ SwapRatio() {
     fi
 }
 
+case $1 in
+"--mem")
+    loadMemory
+    echo "RAM : $MEMORY_RAM GB"
+    echo "Swap : $MEMORY_SWAP GB"
+    exit 0
+    ;;
+"--git")
+    set_git_user
+    exit 0
+    ;;
+"--setup")
+    script_install
+    exit 0
+    ;;
+"--ccache")
+    ccache_settings
+    exit 0
+    ;;
+"--swap")
+    loadMemory
+    SwapRatio
+    AddSwap
+    exit 0
+    ;;
+"-h" | "--help")
+    echo "Available option:"
+    printf "\t--mem\t\tTo show memory information\n"
+    printf "\t--git\t\tTo configure git account\n"
+    printf "\t--setup\t\tTo install akhilnarang Scripts\n"
+    printf "\t--ccache\tTo configure ccache\n"
+    printf "\t--swap\t\tTo add swap and increase swap ratio\n"
+    echo " "
+    echo "Don't use args for start full script"
+    exit 0
+    ;;
+*)
+    # nothing
+    ;;
+esac
+
 #
 # Get RAM size.
 # If RAM < 16 GB optimize swap usage.
