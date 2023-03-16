@@ -197,6 +197,17 @@ script_install() {
         ./setup/android_build_env.sh
         ;;
     "arch" | "manjaro" | "arcolinux" | "garuda" | "artix" | "cachyos")
+        #
+        # This packages is needed for build kernel linux in arch linux.
+        # Check first if is installed. If isn't installed, install it.
+        #
+        packages="bison flex bc"
+        for package in $packages; do
+            pacman -Q | grep "^$package" &> /dev/null
+            if [[ "$?" -ne 0 ]]; then
+                sudo pacman -S $package
+            fi
+        done
         ./setup/arch-manjaro.sh
         ;;
     "solus")
