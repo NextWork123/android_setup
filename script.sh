@@ -322,25 +322,20 @@ case $1 in
     loadMemory
     echo "RAM : $MEMORY_RAM GB"
     echo "Swap : $MEMORY_SWAP GB"
-    exit 0
     ;;
 "--git")
     set_git_user
-    exit 0
     ;;
 "--setup")
     script_install
-    exit 0
     ;;
 "--ccache")
     ccache_settings
-    exit 0
     ;;
 "--swap")
     loadMemory
     SwapRatio
     AddSwap
-    exit 0
     ;;
 "-h" | "--help")
     echo "Available option:"
@@ -351,41 +346,39 @@ case $1 in
     printf "\t--swap\t\tTo add swap and increase swap ratio\n"
     echo " "
     echo "Don't use args for start full script"
-    exit 0
     ;;
 *)
-    # nothing
+    #
+    # Get RAM size.
+    # If RAM < 16 GB optimize swap usage.
+    # Check also for already swap partition.
+    #
+    loadMemory
+
+    #
+    # git config
+    #
+    set_git_user
+
+    #
+    # Install akhilnarang Scripts
+    #
+    script_install
+
+    #
+    # Default configuration of ccache in bashrc
+    #
+    ccache_settings
+
+    #
+    # Chose if u want add swap with partition or with file.
+    #
+    AddSwap
+
+    #
+    # Increase swap usage from /proc/sys/vm/swappiness
+    #
+    SwapRatio
     ;;
 esac
 
-#
-# Get RAM size.
-# If RAM < 16 GB optimize swap usage.
-# Check also for already swap partition.
-#
-loadMemory
-
-#
-# git config
-#
-set_git_user
-
-#
-# Install akhilnarang Scripts
-#
-script_install
-
-#
-# Default configuration of ccache in bashrc
-#
-ccache_settings
-
-#
-# Chose if u want add swap with partition or with file.
-#
-AddSwap
-
-#
-# Increase swap usage from /proc/sys/vm/swappiness
-#
-SwapRatio
